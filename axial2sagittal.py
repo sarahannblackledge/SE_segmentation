@@ -31,8 +31,8 @@ def axial2sagittal(CT_dir, fpath_uterus_mask):
     sag_label = np.flipud(sag_label)
 
     plt.figure(1)
-    plt.imshow(axial_orientation[:, :, 113], cmap='gray')
-    plt.contour(ax_label[:, :, 113], 1, colors='m')
+    plt.imshow(axial_orientation[:, :, 76], cmap='gray')
+    plt.contour(ax_label[:, :, 76], 1, colors='m')
     plt.show()
 
     plt.figure(2)
@@ -43,8 +43,8 @@ def axial2sagittal(CT_dir, fpath_uterus_mask):
 
     return axial_orientation, sagittal_orientation
 
-CT_dir = "/Users/sblackledge/Documents/Gynae_data_correct/Gynae1_1025/CBCT5_resampled"
-fpath_uterus_mask = "/Users/sblackledge/Documents/Gynae_data_correct/Gynae1_1025/uterus_masks/Uterocervix_05.npy"
+CT_dir = "/Users/sblackledge/Documents/Gynae_data_correct/RMH008/CBCT2_resampled"
+fpath_uterus_mask = "/Users/sblackledge/Documents/Gynae_data_correct/RMH008/uterus_masks/Uterocervix_02.npy"
 axial_orientation, sagittal_orientation = axial2sagittal(CT_dir, fpath_uterus_mask)
 
 
