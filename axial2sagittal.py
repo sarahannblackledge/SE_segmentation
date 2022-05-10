@@ -7,8 +7,8 @@ import sys
 sys.path.append('/Users/sblackledge/PycharmProjects/pythonProject/SE_segmentation')
 from downsamplePatient import downsamplePatient
 
-id_nums = [3, 4, 5, 6]
-patient_name = 'Gynae2_0957'
+id_nums = [2, 4]
+patient_name = 'RMH008'
 for j in id_nums:
     id_num = str(j)
 
@@ -60,21 +60,15 @@ for j in id_nums:
     sag_mask3D = np.flipud(sag_mask3D)
 
     plt.figure()
-    plt.imshow(normalized_im3D[:, :, 125], cmap='gray')
+    plt.imshow(normalized_im3D[:, :, 65], cmap='gray')
     plt.colorbar()
-    plt.contour(mask3D[:, :, 125], 1, colors='m')
+    plt.clim(0, 0.7)
+    plt.contour(mask3D[:, :, 65], 1, colors='m')
     plt.show()
 
     plt.figure()
-    plt.imshow(sag_im3D[:, :, 125], cmap='gray')
+    plt.imshow(sag_im3D[:, :, 120], cmap='gray')
     plt.colorbar()
-    plt.contour(sag_mask3D[:, :, 125], 1, colors='m')
+    plt.clim(0, 0.7)
+    plt.contour(sag_mask3D[:, :, 120], 1, colors='m')
     plt.show()
-
-
-
-
-
-
-
-
