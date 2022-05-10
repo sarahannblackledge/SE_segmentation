@@ -7,6 +7,9 @@ import sys
 sys.path.append('/Users/sblackledge/PycharmProjects/pythonProject/SE_segmentation')
 from downsamplePatient import downsamplePatient
 
+#plotflag 0 to hide plots, any other number to show
+plotflag = 0
+
 id_nums = [2, 4]
 patient_name = 'RMH008'
 for j in id_nums:
@@ -59,16 +62,36 @@ for j in id_nums:
     sag_mask3D = mask3D.transpose(2, 0, 1)
     sag_mask3D = np.flipud(sag_mask3D)
 
-    plt.figure()
-    plt.imshow(normalized_im3D[:, :, 65], cmap='gray')
-    plt.colorbar()
-    plt.clim(0, 0.7)
-    plt.contour(mask3D[:, :, 65], 1, colors='m')
-    plt.show()
+    #Save each slice as individual npy array in 'sagittal_data_CBCT' folder
+    img_path = '/Users/sblackledge/Documents/Gynae_data_correct/sagittal_data_CBCT/images'
+    label_path = '/Users/sblackledge/Documents/Gynae_data_correct/sagittal_data_CBCT/labels'
 
-    plt.figure()
-    plt.imshow(sag_im3D[:, :, 120], cmap='gray')
-    plt.colorbar()
-    plt.clim(0, 0.7)
-    plt.contour(sag_mask3D[:, :, 120], 1, colors='m')
-    plt.show()
+    arr_size = sag_mask3D.shape
+    for i in range(0, arr_size[2]-1):
+        sag_slice = sag_im3D[:, :, i]
+        label_slice = sag_mask3D[:, :, i]
+
+        fname = patient_name + "CBCT" + id_num + "_" + str(i)
+
+        fpath_img = os.path.join(img_path, fname)
+        fpath_label = os.path.join(label_path, fname)
+
+        np.save(fpath_img, sag_slice)
+        np.save(fpath_label, label_slice)
+
+
+    #Visualize example slices for sanity check (optional: hardcode plotflag variable to show/hide)
+    if plotflag != 0:
+        plt.figure()
+        plt.imshow(normalized_im3D[:, :, 65], cmap='gray')
+        plt.colorbar()
+        plt.clim(0, 0.7)
+        plt.contour(mask3D[:, :, 65], 1, colors='m')
+        plt.show()
+
+        plt.figure()
+        plt.imshow(sag_im3D[:, :, 120], cmap='gray')
+        plt.colorbar()
+        plt.clim(0, 0.7)
+        plt.contour(sag_mask3D[:, :, 120], 1, colors='m')
+        plt.show()
