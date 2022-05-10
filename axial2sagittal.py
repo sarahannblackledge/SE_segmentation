@@ -6,7 +6,7 @@ import pydicom as dicom
 import matplotlib.pyplot as plt
 
 
-def axial2sagittal(CT_dir):
+def axial2sagittal(CT_dir, fpath_uterus_mask):
     # Make sitk image object
     files_CT = np.array([os.path.join(CT_dir, fl) for fl in os.listdir(CT_dir) if "dcm" in fl])
     dicoms = np.array([dicom.read_file(fl, stop_before_pixels = True) for fl in files_CT])
@@ -14,35 +14,40 @@ def axial2sagittal(CT_dir):
     files_CT = files_CT[np.argsort(locations)]
     CT = sitk.ReadImage(files_CT)
 
-    #Get image data
-    image_out = sitk.GetImageFromArray(sitk.GetArrayFromImage(CT))
+    #reorient dicom and save as nrrd
+    '''reoriented = sitk.DICOMOrient(CT, 'SPR')
+    #sitk.WriteImage(reoriented, '/Users/sblackledge/Desktop/SPR.nrrd')'''
 
-    #Set up other image characteristics
-    image_out.SetOrigin(CT.GetOrigin())
-    image_out.SetSpacing(CT.GetSpacing())
+    #reorient numpy array
+    CT_im = sitk.GetArrayFromImage(CT)
+    axial_orientation = CT_im.transpose(1, 2, 0)
+    sagittal_orientation = axial_orientation.transpose(2, 0, 1)
+    sagittal_orientation = np.flipud(sagittal_orientation)
 
-    ''''#Set to sagittal
-    directioncosines = (0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-    image_out.SetDirection(directioncosines)
-    #sitk.WriteImage(image_out, '/Users/sblackledge/Desktop/test.nrrd')'''
+    #Load in uterus npy mask
+    ax_label = np.load(fpath_uterus_mask)
+    ax_label = ax_label.transpose(1,0, 2)
+    sag_label = ax_label.transpose(2, 0, 1)
+    sag_label = np.flipud(sag_label)
 
-    image_out = sitk.DICOMOrient(CT, 'PSL')
-    sitk.WriteImage(image_out, '/Users/sblackledge/Desktop/test.nrrd')
-    return CT, image_out
+    plt.figure(1)
+    plt.imshow(axial_orientation[:, :, 113], cmap='gray')
+    plt.contour(ax_label[:, :, 113], 1, colors='m')
+    plt.show()
 
-CT_dir = "/Users/sblackledge/Documents/Gynae_data_correct/Gynae1_1025/CBCT3_resampled"
+    plt.figure(2)
+    plt.imshow(sagittal_orientation[:, :, 250], cmap='gray')
+    plt.contour(sag_label[:, :, 250], 1, colors='m')
+    plt.show()
 
-CT, image_out = axial2sagittal(CT_dir)
 
-#Display
-plt.figure(0)
-plt.title('original image')
-CT_im = sitk.GetArrayFromImage(CT)
-plt.imshow(CT_im[75], cmap='gray')
-plt.show()
+    return axial_orientation, sagittal_orientation
 
-plt.figure(1)
-plt.title('re-oriented image')
-CT_im2 = sitk.GetArrayFromImage(image_out)
-plt.imshow(CT_im2[175], cmap='gray')
-plt.show()
+CT_dir = "/Users/sblackledge/Documents/Gynae_data_correct/Gynae1_1025/CBCT5_resampled"
+fpath_uterus_mask = "/Users/sblackledge/Documents/Gynae_data_correct/Gynae1_1025/uterus_masks/Uterocervix_05.npy"
+axial_orientation, sagittal_orientation = axial2sagittal(CT_dir, fpath_uterus_mask)
+
+
+
+
+
