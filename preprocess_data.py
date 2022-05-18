@@ -7,6 +7,7 @@ import sys
 sys.path.append('/Users/sblackledge/PycharmProjects/pythonProject/SE_segmentation')
 from crop_sitk_im import crop_sitk_im
 from resample_patient import resample_patient
+import cv2
 
 #Prepares data for semantic segmentation using U-Net. Specifically, 3D data is cropped, resampled, and intensity-normalized
 #outputs:
@@ -50,7 +51,7 @@ for j in id_nums:
     cropped_img, cropped_mask = crop_sitk_im(CT_sitk, uterus_mask)
 
     # Downsample to 256x256x130
-    desired_dimensions = [256, 256, 130]
+    desired_dimensions = [256, 256, 256]
     CT_sitk = resample_patient(cropped_img, desired_dimensions, is_label=False)
     uterus_mask = resample_patient(cropped_mask, desired_dimensions, is_label=True)
 
@@ -105,8 +106,8 @@ for j in id_nums:
 
     arr_size = sag_mask3D.shape
     for i in range(0, arr_size[2]-1):
-        sag_slice = sag_im3D[:, :, i]
-        label_slice = sag_mask3D[:, :, i]
+        sag_slice = (sag_im3D[:, :, i])*255
+        label_slice = (sag_mask3D[:, :, i])*255
 
         fname = patient_name + "CBCT" + id_num + "_" + str(i)+'.png'
 
@@ -118,8 +119,15 @@ for j in id_nums:
         np.save(fpath_label, label_slice)'''
 
         #Save as png
-        plt.imsave(fpath_img, sag_slice, cmap='gray', vmin=0, vmax=.7)
-        plt.imsave(fpath_label, label_slice, cmap='gray')
+        #plt.imsave(fpath_img, sag_slice, cmap='gray', vmin=0, vmax=.7)
+        #plt.imsave(fpath_label, label_slice, cmap='gray')
+
+        sag_slice = sag_slice.astype('uint8')
+        label_slice = label_slice.astype('uint8')
+
+        cv2.imwrite(fpath_img, sag_slice)
+        cv2.imwrite(fpath_label, label_slice)
+
 
 
     #Visualize example slices for sanity check (optional: hardcode plotflag variable to show/hide)
