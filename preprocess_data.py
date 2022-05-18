@@ -8,6 +8,14 @@ sys.path.append('/Users/sblackledge/PycharmProjects/pythonProject/SE_segmentatio
 from crop_sitk_im import crop_sitk_im
 from resample_patient import resample_patient
 
+#Prepares data for semantic segmentation using U-Net. Specifically, 3D data is cropped, resampled, and intensity-normalized
+#outputs:
+# (1) nrrd files of image and corresponding mask in patient subdirectories 'processed_CBCTs_nrrd' and 'processesd_masks_nrrd', respectivley
+# (2) png files of 2D sagittal images and corresponding mask in directory 'sagittal_data_CBCT'
+
+#This is not actually a function, so manually edit the 'id_nums" and 'patient_name' variables in-line
+
+
 #plotflag 0 to hide plots, any other number to show
 plotflag = 1
 
